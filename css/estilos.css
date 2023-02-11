@@ -102,6 +102,22 @@ body {
     cursor: pointer;
 }
 
+.message {
+    position: fixed;
+    bottom: 0;
+
+    z-index: 10;
+    width: 100vw;
+}
+
+.message.error {
+    background-color: #ff6961;
+}
+
+.message.success {
+    background-color: #90ee90;   
+}
+
 @media(min-width: 834px) {
 
     body {

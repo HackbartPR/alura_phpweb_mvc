@@ -27,10 +27,10 @@
     <header>
 
         <nav class="cabecalho">
-            <a class="logo" href="./index.html"></a>
+            <a class="logo" href="./index.php"></a>
 
             <div class="cabecalho__icones">
-                <a href="./pages/enviar-video.html" class="cabecalho__videos"></a>
+                <a href="./pages/enviar-video.php" class="cabecalho__videos"></a>
                 <a href="./pages/login.html" class="cabecalho__sair">Sair</a>
             </div>
         </nav>
@@ -41,34 +41,34 @@
 
     <ul class="videos__container" alt="videos alura">
         <?php foreach ($videosList as $video): ?>
-            <?php if(str_starts_with($video['url'], 'http') || str_starts_with($video['url'], 'https')): ?>
+            <!-- <?php if(str_starts_with($video['url'], 'http') || str_starts_with($video['url'], 'https')): ?> -->
                 <li class="videos__item">
-                    <iframe width="100%" height="72%" src="<?php echo $video['url']?>"
+                    <iframe width="100%" height="72%" src="<?=$video['url']?>"
                         title="YouTube video player" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen></iframe>
                     <div class="descricao-video">
                         <img src="./img/logo.png" alt="logo canal alura">
-                        <h3><?php echo $video['title']?></h3>
+                        <h3><?=$video['title']?></h3>
                         <div class="acoes-video">
-                            <a href="./pages/enviar-video.html">Editar</a>
-                            <a href="./pages/enviar-video.html">Excluir</a>
+                            <a href="./pages/enviar-video.php?id=<?=$video['id']?>">Editar</a>
+                            <a href="./pages/remover-video.php?id=<?=$video['id']?>">Excluir</a>
                         </div>
                     </div>
                 </li>
-            <?php endif; ?>
+            <!-- <?php endif; ?> -->
         <?php endforeach; ?>        
     </ul>
 
     <!-- Resposta -->
     <?php if(isset($_SESSION['save'])):?>
         <?php if ($_SESSION['save']['status']) {?>
-            <div style="background-color: #90ee90;">
-                <?php echo $_SESSION['save']['message']; ?>
+            <div class='message success'>
+                <?=$_SESSION['save']['message'];?>
             </div>
         <?php } else { ?>
-            <div style="background-color: #ff6961; ">
-                <?php echo $_SESSION['save']['message']; ?>
+            <div class='message error'>
+                <?=$_SESSION['save']['message'];?>
             </div>
         <?php } ?>
         <?php session_destroy(); ?>
