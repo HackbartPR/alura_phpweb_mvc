@@ -1,100 +1,66 @@
-<?php 
-    if (!isset($_SESSION)) {
-        session_start();
-    }
+<?php
+if (!isset($_SESSION)) {
+    session_start();
+}
 
-    if (isset($_GET['id'])) {
-        $dbPath = __DIR__ . '/../db.sqlite';
-        $pdo = new PDO("sqlite:{$dbPath}");
+if (isset($_GET['id'])) {
+    $dbPath = __DIR__ . '/../db.sqlite';
+    $pdo = new PDO("sqlite:{$dbPath}");
 
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
-        $stmt = $pdo->prepare('SELECT * FROM videos WHERE id = ?');
-        $stmt->bindValue(1, $id, \PDO::PARAM_INT);
-        $stmt->execute();
+    $stmt = $pdo->prepare('SELECT * FROM videos WHERE id = ?');
+    $stmt->bindValue(1, $id, \PDO::PARAM_INT);
+    $stmt->execute();
 
-        $video = $stmt->fetch(\PDO::FETCH_ASSOC);
-    }
-?><!DOCTYPE html>
-<html lang="pt-br">
+    $video = $stmt->fetch(\PDO::FETCH_ASSOC);
+}
+?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/reset.css">
-    <link rel="stylesheet" href="../css/estilos.css">
-    <link rel="stylesheet" href="../css/estilos-form.css">
-    <link rel="stylesheet" href="../css/flexbox.css">
-    <title>AluraPlay</title>
-    <link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon">
-</head>
+<?php require_once __DIR__ . '/../components/header.php'; ?>
 
-<body>
+<main class="container">
 
-    <!-- Cabecalho -->
-    <header>
+    <?php if ($video) { ?>
 
-        <nav class="cabecalho">
-            <a class="logo" href="../index.php"></a>
+        <form class="container__formulario" method="POST" action="/editar?id=<?= $video['id'] ?>">
+            <h2 class="formulario__titulo"><?= $video['title'] ?></h2>
 
-            <div class="cabecalho__icones">
-                <a href="./enviar-video.php" class="cabecalho__videos"></a>
-                <a href="../pages/login.html" class="cabecalho__sair">Sair</a>
+            <div class="formulario__campo">
+                <label class="campo__etiqueta" for="url">Link embed</label>
+                <input name="url" class="campo__escrita" required placeholder="Por exemplo: https://www.youtube.com/embed/FAY1K2aUg5g" id='url' value='<?= $video['url'] ?>' />
             </div>
-        </nav>
-
-    </header>
-
-    <main class="container">
-
-        <?php if ($video) { ?>
-
-            <form class="container__formulario" method="POST" action="atualizar-video.php?id=<?=$video['id']?>">
-                <h2 class="formulario__titulo"><?=$video['title']?></h2>
-                
-                <div class="formulario__campo">
-                    <label class="campo__etiqueta" for="url">Link embed</label>
-                    <input name="url" class="campo__escrita" required
-                        placeholder="Por exemplo: https://www.youtube.com/embed/FAY1K2aUg5g" id='url' value='<?=$video['url']?>'/>
-                </div>
 
 
-                <div class="formulario__campo">
-                    <label class="campo__etiqueta" for="titulo">Titulo do vídeo</label>
-                    <input name="titulo" class="campo__escrita" required placeholder="Neste campo, dê o nome do vídeo"
-                        id='titulo' value='<?=$video['title']?>'/>
-                </div>
+            <div class="formulario__campo">
+                <label class="campo__etiqueta" for="titulo">Titulo do vídeo</label>
+                <input name="titulo" class="campo__escrita" required placeholder="Neste campo, dê o nome do vídeo" id='titulo' value='<?= $video['title'] ?>' />
+            </div>
 
-                <input class="formulario__botao" type="submit" value="Atualizar" />
-            </form>
+            <input class="formulario__botao" type="submit" value="Atualizar" />
+        </form>
 
-        <?php } else { ?>
+    <?php } else { ?>
 
-            <form class="container__formulario" method="POST" action="novo-video.php">
-                <h2 class="formulario__titulo">Envie um vídeo!</h2>
-                
-                <div class="formulario__campo">
-                    <label class="campo__etiqueta" for="url">Link embed</label>
-                    <input name="url" class="campo__escrita" required
-                        placeholder="Por exemplo: https://www.youtube.com/embed/FAY1K2aUg5g" id='url' />
-                </div>
+        <form class="container__formulario" method="POST" action="/novo">
+            <h2 class="formulario__titulo">Envie um vídeo!</h2>
+
+            <div class="formulario__campo">
+                <label class="campo__etiqueta" for="url">Link embed</label>
+                <input name="url" class="campo__escrita" required placeholder="Por exemplo: https://www.youtube.com/embed/FAY1K2aUg5g" id='url' />
+            </div>
 
 
-                <div class="formulario__campo">
-                    <label class="campo__etiqueta" for="titulo">Titulo do vídeo</label>
-                    <input name="titulo" class="campo__escrita" required placeholder="Neste campo, dê o nome do vídeo"
-                        id='titulo' />
-                </div>
+            <div class="formulario__campo">
+                <label class="campo__etiqueta" for="titulo">Titulo do vídeo</label>
+                <input name="titulo" class="campo__escrita" required placeholder="Neste campo, dê o nome do vídeo" id='titulo' />
+            </div>
 
-                <input class="formulario__botao" type="submit" value="Enviar" />
-            </form>
+            <input class="formulario__botao" type="submit" value="Enviar" />
+        </form>
 
-        <?php } ?>
+    <?php } ?>
 
-    </main>
+</main>
 
-</body>
-
-</html>
+<?php require_once __DIR__ . '/../components/footer.php'; ?>
