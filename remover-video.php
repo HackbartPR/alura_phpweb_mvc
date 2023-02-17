@@ -1,11 +1,11 @@
 <?php
 
+use HackbartPR\Config\ConnectionCreator;
+use HackbartPR\Repository\PDOVideoRepository;
+
 if (!isset($_SESSION)) {
     session_start();
 }
-
-$dbPath = __DIR__ . '/db.sqlite';
-$pdo = new PDO("sqlite:{$dbPath}");
 
 if (!isset($_GET['id'])) {
     $_SESSION['save']['status'] = false;
@@ -13,9 +13,9 @@ if (!isset($_GET['id'])) {
     header('Location: /');    
 }
 
-$stmt = $pdo->prepare('DELETE FROM videos WHERE id = ?');
-$stmt->bindValue(1, $_GET['id'], \PDO::PARAM_INT);
-$result = $stmt->execute();
+$conn = ConnectionCreator::createConnection();
+$repository = new PDOVideoRepository($conn);
+$result = $repository->remove($_GET['id']);
 
 $_SESSION['save']['status'] = $result;
 if ($result) {
