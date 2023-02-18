@@ -17,6 +17,7 @@ class PDOVideoRepository implements VideoRepository
 
     public function save(Video $video):bool
     {
+        var_dump($video->id());
         if (!empty($video->id())) {
             return $this->update($video);
         }
@@ -26,6 +27,7 @@ class PDOVideoRepository implements VideoRepository
 
     public function add(Video $video): bool
     {
+        
         $stmt = $this->pdo->prepare('INSERT INTO videos (url, title) VALUES (?,?);');
         $stmt->bindValue(1, $video->url);
         $stmt->bindValue(2, $video->title);
@@ -61,5 +63,17 @@ class PDOVideoRepository implements VideoRepository
         }
 
         return $videoList;
+    }
+
+    public function show(int $id): Video
+    {   
+        $id = filter_var($id, FILTER_VALIDATE_INT); 
+        
+        $stmt = $this->pdo->prepare('SELECT * FROM videos WHERE id = ?');
+        $stmt->bindValue(1, $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        $video = $stmt->fetch();
+
+        return new Video($video['id'], $video['title'], $video['url']);
     }
 }

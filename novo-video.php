@@ -1,46 +1,33 @@
 <?php
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+use HackbartPR\Entity\Video;
+use HackbartPR\Utils\Message;
+use HackbartPR\Config\ConnectionCreator;
+use HackbartPR\Repository\PDOVideoRepository;
 
-$dbPath = __DIR__ . '/db.sqlite';
-$pdo = new PDO("sqlite:{$dbPath}");
+session_start();
 
 if (!isset($_POST)) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "Erro ao enviar o formulário";
-    header('Location: /');    
-    exit();
+    Message::create(Message::FORM_FAIL);
 }
 
 $url = filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL);
 $title = filter_input(INPUT_POST, 'titulo');
 
 if (!$url) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "URL não é válida";
-    header('Location: /');    
-    exit();
+    Message::create(Message::URL_FAIL);
 }
 
 if (!$title) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "Título não é valido";
-    header('Location: /');    
-    exit();
+    Message::create(Message::TITLE_FAIL);
 }
 
-$stmt = $pdo->prepare('INSERT INTO videos (url, title) VALUES (?,?);');
-$stmt->bindValue(1, $url);
-$stmt->bindValue(2, $title);
-$resp = $stmt->execute();
+$conn = ConnectionCreator::createConnection();
+$repository = new PDOVideoRepository($conn);
+$resp = $repository->save(new Video(null, $title, $url));
 
-$_SESSION['save']['status'] = $resp;
 if ($resp) {
-    $_SESSION['save']['message'] = "Video Cadastrado com Sucesso!";
-    header('Location: /');
+    Message::create(Message::REGISTER_SUCCESS);
 } else {
-    $_SESSION['save']['message'] = "Erro ao Cadastrar o Vídeo";
-    header('Location: /');
+    Message::create(Message::REGISTER_FAIL);
 }

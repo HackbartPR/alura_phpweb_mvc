@@ -1,17 +1,14 @@
 <?php
 
-if (!isset($_SESSION)) {
-    session_start();
-}
+session_start();
 
-$dbPath = __DIR__ . '/db.sqlite';
-$pdo = new PDO("sqlite:{$dbPath}");
+use HackbartPR\Entity\Video;
+use HackbartPR\Utils\Message;
+use HackbartPR\Config\ConnectionCreator;
+use HackbartPR\Repository\PDOVideoRepository;
 
 if (!isset($_POST) || !isset($_GET['id'])) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "Erro ao enviar o formulário";
-    header('Location: /');    
-    exit();
+    Message::create(Message::FORM_FAIL);
 }
 
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -19,30 +16,19 @@ $url = filter_input(INPUT_POST, 'url', FILTER_VALIDATE_URL);
 $title = filter_input(INPUT_POST, 'titulo');
 
 if (!$url) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "URL não é válida";
-    header('Location: /');    
-    exit();
+    Message::create(Message::URL_FAIL);
 }
 
 if (!$title) {
-    $_SESSION['save']['status'] = false;
-    $_SESSION['save']['message'] = "Título não é valido";
-    header('Location: /');    
-    exit();
+    Message::create(Message::TITLE_FAIL);
 }
 
-$stmt = $pdo->prepare('UPDATE videos SET url = :url, title = :title WHERE id = :id;');
-$stmt->bindValue(':url', $url);
-$stmt->bindValue(':title', $title);
-$stmt->bindValue(':id', $id);
-$resp = $stmt->execute();
+$conn = ConnectionCreator::createConnection();
+$repository = new PDOVideoRepository($conn);
+$resp = $repository->save(new Video($id, $title, $url));
 
-$_SESSION['save']['status'] = $resp;
 if ($resp) {
-    $_SESSION['save']['message'] = "Video atualizado com sucesso!";
-    header('Location: /');
+    Message::create(Message::UPDATE_SUCCESS);
 } else {
-    $_SESSION['save']['message'] = "Erro ao atualizar o vídeo";
-    header('Location: /');
+    Message::create(Message::UPDATE_FAIL);
 }

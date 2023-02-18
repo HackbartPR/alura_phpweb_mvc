@@ -26,7 +26,7 @@ class Video
         $this->url = $url;
     }
 
-    public function id(): int
+    public function id(): ?int
     {
         return $this->id;
     }
