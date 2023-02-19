@@ -16,8 +16,7 @@ class PDOVideoRepository implements VideoRepository
     }
 
     public function save(Video $video):bool
-    {
-        var_dump($video->id());
+    {        
         if (!empty($video->id())) {
             return $this->update($video);
         }
@@ -47,6 +46,7 @@ class PDOVideoRepository implements VideoRepository
 
     public function remove(int $id): bool
     {
+        $id = filter_var($id, FILTER_VALIDATE_INT); 
         $stmt = $this->pdo->prepare('DELETE FROM videos WHERE id = ?');
         $stmt->bindValue(1, $_GET['id'], \PDO::PARAM_INT);
         return $stmt->execute();
