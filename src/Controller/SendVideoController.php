@@ -2,9 +2,10 @@
 
 namespace HackbartPR\Controller;
 
+use HackbartPR\Interfaces\Controller;
 use HackbartPR\Repository\PDOVideoRepository;
 
-class SendVideoController
+class SendVideoController implements Controller
 {
     private PDOVideoRepository $repository;
 

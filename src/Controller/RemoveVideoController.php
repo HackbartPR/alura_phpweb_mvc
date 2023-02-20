@@ -3,9 +3,10 @@
 namespace HackbartPR\Controller;
 
 use HackbartPR\Utils\Message;
+use HackbartPR\Interfaces\Controller;
 use HackbartPR\Repository\PDOVideoRepository;
 
-class RemoveVideoController
+class RemoveVideoController implements Controller
 {
     private Message $message;
     private PDOVideoRepository $repository;
