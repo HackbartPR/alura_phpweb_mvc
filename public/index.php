@@ -18,26 +18,15 @@ $conn = ConnectionCreator::createConnection();
 $repository = new PDOVideoRepository($conn);
 $message = new Message();
 
-$path = $_SERVER['PATH_INFO'];
+$path = $_SERVER['PATH_INFO'] ?? '/';
 $method = $_SERVER['REQUEST_METHOD'];
 
-if ($path === '/' || !array_key_exists('PATH_INFO', $_SERVER)) {
-    $controller = new ShowVideoController($repository, $message);        
-} else if ($path === '/novo') {
-    if ($method === 'GET') {
-        $controller = new SendVideoController($repository, $message);        
-    } else if ($method === 'POST') {
-        $controller = new NewVideoController($repository, $message);        
-    }
-} else if ($path === '/editar') {
-    if ($method === 'GET') {
-        $controller = new SendVideoController($repository, $message);        
-    } else if ($method === 'POST') {
-        $controller = new UpdateVideoController($repository, $message);        
-    }
-} else if ($path === '/remover') {
-    $controller = new RemoveVideoController($repository, $message);    
-} else {
+$router = require_once __DIR__ . '/../routes/router.php';
+$routerClass = $router["$method|$path"];
+
+if (array_key_exists("$method|$path", $router)) {
+    $controller = new $routerClass($repository, $message);
+} else {    
     $controller = new Response404Controller();
 }
 
